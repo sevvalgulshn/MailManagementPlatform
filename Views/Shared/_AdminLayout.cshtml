@@ -1,0 +1,278 @@
+﻿@using Project2EmailNight.Entities
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<AppUser> UserManager
+
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Project2EmailNight</title>
+
+    <link rel="shortcut icon" href="~/assets/images/favicon.ico" />
+
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/assets/css/icons.css" rel="stylesheet" />
+   
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@mdi/font@7.4.47/css/materialdesignicons.min.css" />
+    <link href="~/assets/css/app.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f5f7fb;
+        }
+
+        .app-shell {
+            min-height: 100vh;
+        }
+
+        .app-sidebar {
+            width: 280px;
+            background: #ffffff;
+            border-right: 1px solid rgba(0,0,0,.06);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 18px 10px 18px;
+        }
+
+        .brand-badge {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,.06);
+            box-shadow: 0 8px 18px rgba(15,23,42,.08);
+            overflow: hidden;
+            flex: 0 0 auto;
+        }
+
+        .brand-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .compose-btn {
+            margin: 10px 14px 14px 14px;
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+
+        .nav-pillish .nav-link {
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin: 4px 10px;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+
+        .nav-pillish .nav-link {
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin: 4px 10px;
+            color: #2d3748;
+            font-weight: 500; 
+        }
+
+
+            .nav-pillish .nav-link:hover {
+                background: #f3f6ff;
+            }
+
+            .nav-pillish .nav-link.active {
+                background: #6f42c1;
+                color: #fff;
+            }
+
+        .sidebar-section-title {
+            margin-top: 14px;
+            padding: 6px 18px 0 18px;
+            font-size: .75rem;
+            letter-spacing: .08em;
+            color: #94a3b8;
+        }
+
+        .app-topbar {
+            height: 64px;
+            background: #ffffff;
+            border-bottom: 1px solid rgba(0,0,0,.06);
+        }
+
+        .content-wrap {
+            padding: 18px;
+        }
+
+        .search-input {
+            border-radius: 12px;
+            background: #f3f5f9;
+            border: 1px solid transparent;
+        }
+
+            .search-input:focus {
+                background: #fff;
+                border-color: rgba(111,66,193,.25);
+                box-shadow: none;
+            }
+
+        .top-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    @{
+        // Active menu helper
+        string c = (ViewContext.RouteData.Values["controller"]?.ToString() ?? "");
+        string a = (ViewContext.RouteData.Values["action"]?.ToString() ?? "");
+        Func<string, string, bool> isActive = (ctrl, act) =>
+        c.Equals(ctrl, StringComparison.OrdinalIgnoreCase)
+        && a.Equals(act, StringComparison.OrdinalIgnoreCase);
+
+        // Current user (topbar)
+        AppUser? currentUser = null;
+        if (User?.Identity?.IsAuthenticated == true)
+        {
+            currentUser = await UserManager.FindByNameAsync(User.Identity!.Name!);
+        }
+
+        var displayName = currentUser == null ? "" : $"{currentUser.Name} {currentUser.Surname}".Trim();
+
+        // Fallback image: mail.png 
+        var fallbackAvatar = Url.Content("~/images/mail.png");
+
+        var imgSrc = (!string.IsNullOrWhiteSpace(currentUser?.ImageUrl))
+        ? Url.Content("~/images/" + currentUser!.ImageUrl)
+        : fallbackAvatar;
+    }
+
+    <div class="d-flex app-shell">
+
+        <!-- Sidebar -->
+        <aside class="app-sidebar d-flex flex-column">
+            <div class="brand">
+                <div class="brand-badge">
+                    <img src="~/images/mail.png" class="brand-logo" alt="Logo" />
+                </div>
+
+                <div>
+                    <div class="fw-bold" style="line-height:1;">ŞGŞ</div>
+                    <div class="text-muted" style="font-size:.85rem;">Mail Panel</div>
+                </div>
+            </div>
+
+            <a class="btn btn-primary compose-btn"
+               asp-controller="Message" asp-action="CreateMessage">
+                <i class="mdi mdi-pencil-outline me-1"></i> Yeni E-Posta
+            </a>
+          <nav class="nav flex-column nav-pillish">
+                <a class="nav-link @(isActive("Message", "Inbox") ? "active" : "")"
+                   asp-controller="Message" asp-action="Inbox">
+                    <i class="mdi mdi-inbox-arrow-down-outline me-2"></i> Gelen Kutusu
+                </a>
+
+                <a class="nav-link @(isActive("Message", "SendBox") ? "active" : "")"
+                   asp-controller="Message" asp-action="SendBox">
+                    <i class="mdi mdi-send-outline me-2"></i> Gönderilenler
+                </a>
+
+                <a class="nav-link @(isActive("Dashboard", "Index") ? "active" : "")"
+                   asp-controller="Dashboard" asp-action="Index">
+                    <i class="mdi mdi-view-dashboard-outline me-2"></i> Dashboard
+                </a>
+
+                <a class="nav-link @(isActive("Profile", "Index") ? "active" : "")"
+                   asp-controller="Profile" asp-action="Index">
+                    <i class="mdi mdi-account-circle-outline me-2"></i> Profil
+                </a>
+
+                <a class="nav-link"
+                   asp-controller="Login" asp-action="Logout">
+                    <i class="mdi mdi-logout me-2"></i> Çıkış
+                </a>
+            </nav>
+
+
+            <!-- Kategoriler (dinamik) -->
+            <div class="sidebar-section-title">KATEGORİLER</div>
+
+            @await Component.InvokeAsync("CategoryList")
+
+            <div class="mt-auto p-3 text-muted" style="font-size:.85rem;">
+                © @DateTime.Now.Year
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <div class="flex-grow-1 d-flex flex-column">
+
+            <!-- Topbar -->
+            <header class="app-topbar d-flex align-items-center px-3 px-md-4">
+                <div class="flex-grow-1">
+                    <form method="get" action="#">
+                        <div class="input-group" style="max-width:520px;">
+                            <span class="input-group-text border-0 bg-transparent">
+                                <i class="mdi mdi-magnify"></i>
+                            </span>
+                            <input class="form-control search-input"
+                                   placeholder="Mail ara (konu, gönderen, içerik...)"
+                                   disabled />
+                        </div>
+                    </form>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img class="top-avatar" src="@imgSrc" alt="User" />
+                            <span class="d-none d-md-inline">@displayName</span>
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" asp-controller="Profile" asp-action="Index">
+                                    <i class="mdi mdi-account-circle-outline me-2"></i> Profil
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Login" asp-action="Logout">
+                                    <i class="mdi mdi-logout me-2"></i> Çıkış
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="content-wrap flex-grow-1">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+
+    <!-- PLUGINS -->
+    <script src="~/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+    <script src="~/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+
+    <!-- APP -->
+    <script src="~/assets/js/app.js"></script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

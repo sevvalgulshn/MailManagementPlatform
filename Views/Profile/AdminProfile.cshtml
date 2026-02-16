@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h4 class="mb-4">📊 Mail İstatistikleri</h4>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-soft p-3">
+            <h6>Son 30 Günlük Trafik</h6>
+            <canvas id="dailyChart" height="120"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const dailyData = @Html.Raw(ViewBag.TrafficDaily);
+
+        const ctx = document.getElementById('dailyChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dailyData.labels,
+                datasets: [
+                    {
+                        label: 'Gelen',
+                        data: dailyData.received,
+                        borderColor: '#6f42c1',
+                        backgroundColor: 'rgba(111,66,193,.15)',
+                        tension: .4,
+                        fill: true
+                    },
+                    {
+                        label: 'Gönderilen',
+                        data: dailyData.sent,
+                        borderColor: '#20c997',
+                        backgroundColor: 'rgba(32,201,151,.15)',
+                        tension: .4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+    </script>
+}

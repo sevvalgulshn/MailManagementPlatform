@@ -1,0 +1,234 @@
+﻿@model Project2EmailNight.Dtos.UserEditDto
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Profil";
+}
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h4 class="mb-1 fw-bold">Profil</h4>
+            <div class="text-muted" style="font-size:.92rem;">Hesap bilgilerini ve profil fotoğrafını güncelle</div>
+        </div>
+    </div>
+
+    <div class="card profile-shell border-0 shadow-sm">
+        <div class="row g-0">
+
+            <!-- SOL: Profil kartı -->
+            <div class="col-12 col-lg-4 profile-left">
+                <div class="p-4 text-center">
+
+                    <div class="avatar-wrap mx-auto">
+                        <img class="profile-avatar"
+                             src="@(string.IsNullOrWhiteSpace(Model.ImageUrl) ? Url.Content("~/images/mail.png") : Url.Content("~/images/" + Model.ImageUrl))"
+                             alt="avatar" />
+                        <span class="avatar-ring"></span>
+                    </div>
+
+                    <h5 class="mt-3 mb-1 fw-bold">@Model.Name @Model.Surname</h5>
+                    <div class="text-muted" style="font-size:.95rem;">
+                        Yazılım Mühendisi • ASP.NET Core Full-Stack
+                    </div>
+
+
+                    <div class="profile-divider my-4"></div>
+
+                    <div class="profile-mini text-start">
+                        <div class="mini-row">
+                            <span class="mini-ico"><i class="mdi mdi-email-outline"></i></span>
+                            <div>
+                                <div class="mini-label">Email</div>
+                                <div class="mini-val">@Model.Email</div>
+                            </div>
+                        </div>
+
+                        <div class="mini-row mt-3">
+                            <span class="mini-ico"><i class="mdi mdi-shield-check-outline"></i></span>
+                            <div>
+                                <div class="mini-label">Hesap Durumu</div>
+                                <div class="mini-val">Aktif</div>
+                            </div>
+                        </div>
+
+                        <div class="mini-row mt-3">
+                            <span class="mini-ico"><i class="mdi mdi-image-outline"></i></span>
+                            <div>
+                                <div class="mini-label">Fotoğraf</div>
+                                <div class="mini-val">@((string.IsNullOrWhiteSpace(Model.ImageUrl)) ? "Varsayılan" : "Yüklü")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <small class="text-muted">JPG / PNG / WEBP • max 5MB</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAĞ: Form -->
+            <div class="col-12 col-lg-8">
+                <div class="p-4 p-lg-5">
+
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h5 class="mb-0 fw-bold">Profili Düzenle</h5>
+                            <div class="text-muted" style="font-size:.9rem;">Bilgilerini güncelle, şifreyi opsiyonel değiştir</div>
+                        </div>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data" class="profile-form">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Ad</label>
+                                <input asp-for="Name" class="form-control form-soft" />
+                                <span class="text-danger" asp-validation-for="Name"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Soyad</label>
+                                <input asp-for="Surname" class="form-control form-soft" />
+                                <span class="text-danger" asp-validation-for="Surname"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text soft-addon"><i class="mdi mdi-email-outline"></i></span>
+                                    <input asp-for="Email" class="form-control form-soft" />
+                                </div>
+                                <span class="text-danger" asp-validation-for="Email"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Yeni Şifre (opsiyonel)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text soft-addon"><i class="mdi mdi-lock-outline"></i></span>
+                                    <input asp-for="Password" type="password" class="form-control form-soft" />
+                                </div>
+                                <span class="text-danger" asp-validation-for="Password"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Profil Fotoğrafı</label>
+                                <input asp-for="Image" type="file" class="form-control form-soft" />
+                                <div class="text-muted mt-1" style="font-size:.85rem;">Yeni fotoğraf seçersen otomatik güncellenir.</div>
+                                <span class="text-danger" asp-validation-for="Image"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button class="btn btn-primary btn-save rounded-pill px-4" type="submit">
+                                <i class="mdi mdi-content-save-outline me-1"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* genel */
+    .profile-shell {
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .profile-left {
+        background: linear-gradient(180deg, rgba(111,66,193,.10), rgba(255,255,255,1));
+        border-right: 1px solid rgba(15,23,42,.06);
+    }
+
+    /* avatar */
+    .avatar-wrap {
+        position: relative;
+        width: 112px;
+        height: 112px;
+    }
+
+    .profile-avatar {
+        width: 112px;
+        height: 112px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 6px solid #fff;
+        box-shadow: 0 14px 34px rgba(15,23,42,.18);
+        position: relative;
+        z-index: 2;
+    }
+
+    .avatar-ring {
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, rgba(111,66,193,.55), rgba(111,66,193,0) 55%);
+        z-index: 1;
+    }
+
+    .profile-divider {
+        height: 1px;
+        background: rgba(15,23,42,.08);
+    }
+
+    /* sol mini bilgiler */
+    .mini-row {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .mini-ico {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: rgba(111,66,193,.12);
+        color: #6f42c1;
+        box-shadow: 0 10px 22px rgba(15,23,42,.08);
+        flex: 0 0 auto;
+        font-size: 18px;
+    }
+
+    .mini-label {
+        font-size: .78rem;
+        letter-spacing: .02em;
+        color: #94a3b8;
+    }
+
+    .mini-val {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    /* inputlar */
+    .form-soft {
+        border-radius: 14px;
+        background: #f3f5f9;
+        border: 1px solid transparent;
+    }
+
+        .form-soft:focus {
+            background: #fff;
+            border-color: rgba(111,66,193,.25);
+            box-shadow: none;
+        }
+
+    .soft-addon {
+        border-radius: 14px 0 0 14px;
+        background: #f3f5f9;
+        border: 1px solid transparent;
+        color: #64748b;
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

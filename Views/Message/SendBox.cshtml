@@ -1,0 +1,245 @@
+﻿@model List<Project2EmailNight.Entities.Message>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Gönderilenler";
+
+    var count = Model?.Count ?? 0;
+
+    string StripHtml(string html)
+    {
+        if (string.IsNullOrWhiteSpace(html)) return "";
+        
+        var text = System.Text.RegularExpressions.Regex.Replace(html, "<.*?>", string.Empty);
+    
+        text = System.Net.WebUtility.HtmlDecode(text);
+        return text.Trim();
+    }
+}
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h4 class="mb-1 fw-bold">Gönderilenler</h4>
+            <div class="text-muted" style="font-size:.92rem;">Toplam @count mesaj</div>
+        </div>
+
+        <a asp-controller="Message" asp-action="CreateMessage" class="btn btn-primary rounded-pill px-4">
+            <i class="mdi mdi-pencil-outline me-1"></i> Yeni E-Posta
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm mailbox-card">
+        <div class="card-body p-2 p-md-3">
+
+            @if (Model == null || !Model.Any())
+            {
+                <div class="text-center p-5 text-muted">
+                    <i class="mdi mdi-send-outline" style="font-size:42px;"></i>
+                    <div class="mt-2 fw-semibold">Gönderilen kutunuz boş.</div>
+                </div>
+            }
+            else
+            {
+                <div class="mail-list">
+                    @foreach (var item in Model.OrderByDescending(x => x.SendDate))
+                    {
+                        var clean = StripHtml(item.MessageDetail);
+                        var snippet = clean.Length > 120 ? clean.Substring(0, 120) + "..." : clean;
+
+                        <div class="mail-row">
+
+                            <div class="mail-left">
+                                <div class="mail-dot dot-sent" title="Gönderildi"></div>
+
+                                <div class="mail-main">
+                                    <div class="mail-top">
+                                        <div class="mail-from">
+                                            <span class="text-muted">Alıcı:</span>
+                                            <span class="fw-semibold ms-1">@item.ReceiverEmail</span>
+                                        </div>
+                                        <div class="mail-date">
+                                            @item.SendDate.ToString("dd MMM yyyy • HH:mm")
+                                        </div>
+                                    </div>
+
+                                    <div class="mail-subject fw-bold">
+                                        @item.Subject
+                                    </div>
+
+                                    <div class="mail-preview">
+                                        @(string.IsNullOrWhiteSpace(snippet) ? "—" : snippet)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mail-actions">
+                                <a asp-controller="Message"
+                                   asp-action="MessageDetail"
+                                   asp-route-id="@item.MessageId"
+                                   class="icon-btn"
+                                   title="Aç">
+                                    <i class="mdi mdi-eye-outline"></i>
+                                </a>
+
+                                <a asp-controller="Message"
+                                   asp-action="MessageDelete"
+                                   asp-route-id="@item.MessageId"
+                                   class="icon-btn danger"
+                                   title="Sil"
+                                   onclick="return confirm('Mesaj silinsin mi?');">
+                                    <i class="mdi mdi-delete-outline"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .mailbox-card {
+        border-radius: 18px;
+        box-shadow: 0 10px 25px rgba(15,23,42,.06);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .mail-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mail-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(15,23,42,.06);
+        background: #fff;
+        transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+        .mail-row:hover {
+            background: #f6f8ff;
+            transform: translateY(-1px);
+            box-shadow: 0 14px 30px rgba(15,23,42,.08);
+        }
+
+    .mail-left {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .mail-main {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .mail-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-top: 6px;
+        flex: 0 0 auto;
+    }
+
+    .dot-sent {
+        background: rgba(16,185,129,.95);
+        box-shadow: 0 10px 20px rgba(16,185,129,.22);
+    }
+
+    .mail-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 2px;
+    }
+
+    .mail-from {
+        font-size: .92rem;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mail-date {
+        font-size: .82rem;
+        color: #94a3b8;
+        white-space: nowrap;
+    }
+
+    .mail-subject {
+        color: #0f172a;
+        letter-spacing: -.01em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mail-preview {
+        margin-top: 2px;
+        font-size: .9rem;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .mail-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex: 0 0 auto;
+    }
+
+    .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(15,23,42,.08);
+        background: #fff;
+        color: #334155;
+        transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+        text-decoration: none;
+    }
+
+        .icon-btn:hover {
+            background: rgba(111,66,193,.10);
+            color: #6f42c1;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(15,23,42,.10);
+        }
+
+        .icon-btn.danger:hover {
+            background: rgba(239,68,68,.12);
+            color: #ef4444;
+        }
+
+    @@media (max-width: 576px) {
+        .mail-date {
+            display: none;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+        }
+    }
+</style>

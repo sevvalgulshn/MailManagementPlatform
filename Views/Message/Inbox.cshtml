@@ -1,0 +1,289 @@
+﻿@model List<Project2EmailNight.Entities.Message>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Gelen Kutusu";
+
+    var count = Model?.Count ?? 0;
+}
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h4 class="mb-1 fw-bold">Gelen Kutusu</h4>
+            <div class="text-muted" style="font-size:.92rem;">@count mesaj</div>
+        </div>
+
+        <a asp-controller="Message" asp-action="CreateMessage" class="btn btn-primary rounded-pill px-4">
+            <i class="mdi mdi-pencil-outline me-1"></i> Yeni E-Posta
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm mailbox-card">
+        <div class="card-body p-2 p-md-3">
+
+            @if (Model == null || !Model.Any())
+            {
+                <div class="text-center p-5 text-muted">
+                    <i class="mdi mdi-inbox-arrow-down-outline" style="font-size:42px;"></i>
+                    <div class="mt-2 fw-semibold">Gelen kutunuzda mesaj yok.</div>
+                </div>
+            }
+            else
+            {
+                <div class="mail-list">
+
+                    @foreach (var item in Model.OrderByDescending(x => x.SendDate))
+                    {
+                        var isUnread = item.IsStatus == false;
+
+                        var detail = item.MessageDetail ?? "";
+                        // HTML tag temizleme (basit)
+                        var clean = System.Text.RegularExpressions.Regex.Replace(detail, "<.*?>", string.Empty);
+                        var snippet = clean.Length > 90 ? clean.Substring(0, 90) + "..." : clean;
+
+                        <div class="mail-row @(isUnread ? "unread" : "")">
+
+                            <div class="mail-left">
+
+                                <div class="mail-dot @(isUnread ? "dot-unread" : "dot-read")" title="Durum"></div>
+
+                                <div class="mail-main">
+                                    <div class="mail-top">
+                                        <div class="mail-from">
+                                            <span class="fw-semibold">@item.SenderEmail</span>
+                                            @if (isUnread)
+                                            {
+                                                <span class="badge badge-new ms-2">Yeni</span>
+                                            }
+                                        </div>
+
+                                        <div class="mail-date">
+                                            @item.SendDate.ToString("dd MMM yyyy • HH:mm")
+                                        </div>
+                                    </div>
+
+                                    <div class="mail-subject @(isUnread ? "fw-bold" : "")">
+                                        @item.Subject
+                                    </div>
+
+                                    <div class="mail-preview">
+                                        @(string.IsNullOrWhiteSpace(snippet) ? "—" : snippet)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mail-actions">
+                                <a asp-controller="Message"
+                                   asp-action="MessageDetail"
+                                   asp-route-id="@item.MessageId"
+                                   class="icon-btn"
+                                   title="Aç">
+                                    <i class="mdi mdi-eye-outline"></i>
+                                </a>
+
+                                <a asp-controller="Message"
+                                   asp-action="MessageDelete"
+                                   asp-route-id="@item.MessageId"
+                                   class="icon-btn danger"
+                                   title="Sil"
+                                   onclick="return confirm('Mesaj silinsin mi?');">
+                                    <i class="mdi mdi-delete-outline"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .mailbox-card {
+        border-radius: 18px;
+        box-shadow: 0 10px 25px rgba(15,23,42,.06);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .mail-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mail-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(15,23,42,.06);
+        background: #ffffff;
+        transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+        position: relative;
+    }
+
+        .mail-row:hover {
+            background: #f6f8ff;
+            transform: translateY(-1px);
+            box-shadow: 0 14px 30px rgba(15,23,42,.08);
+        }
+
+        /* okunmadı satır: hafif glow + üst çizgi */
+        .mail-row.unread {
+            border-color: rgba(111,66,193,.18);
+            box-shadow: 0 10px 25px rgba(111,66,193,.06);
+        }
+
+            .mail-row.unread::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border-radius: 16px;
+                pointer-events: none;
+                background: linear-gradient(90deg, rgba(111,66,193,.08), transparent 40%);
+                opacity: .8;
+            }
+
+    .mail-left {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .mail-main {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .mail-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-top: 6px;
+        flex: 0 0 auto;
+    }
+
+    .dot-unread {
+        background: rgba(111,66,193,.95);
+        box-shadow: 0 10px 20px rgba(111,66,193,.25);
+    }
+
+    .dot-read {
+        background: rgba(148,163,184,.85);
+    }
+
+    .mail-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 2px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .mail-from {
+        font-size: .92rem;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: relative;
+        z-index: 2;
+    }
+
+    .mail-date {
+        font-size: .82rem;
+        color: #94a3b8;
+        white-space: nowrap;
+        position: relative;
+        z-index: 2;
+    }
+
+    .mail-subject {
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -.01em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: relative;
+        z-index: 2;
+    }
+
+    .mail-preview {
+        margin-top: 2px;
+        font-size: .9rem;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        position: relative;
+        z-index: 2;
+    }
+
+    .badge-new {
+        background: rgba(249,115,22,.14);
+        color: #b45309;
+        border: 1px solid rgba(249,115,22,.22);
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: .72rem;
+    }
+
+    .mail-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex: 0 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(15,23,42,.08);
+        background: #fff;
+        color: #334155;
+        transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+        text-decoration: none;
+    }
+
+        .icon-btn:hover {
+            background: rgba(111,66,193,.10);
+            color: #6f42c1;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(15,23,42,.10);
+        }
+
+        .icon-btn.danger:hover {
+            background: rgba(239,68,68,.12);
+            color: #ef4444;
+        }
+
+    @@media (max-width: 576px) {
+        .mail-date {
+            display: none;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+        }
+    }
+</style>

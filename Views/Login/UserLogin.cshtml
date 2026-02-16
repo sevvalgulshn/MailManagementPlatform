@@ -1,0 +1,151 @@
+﻿@model Project2EmailNight.Dtos.UserLoginDto
+@{
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<style>
+    
+    .login-card-wrap {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 16px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 520px;
+        background: #fff;
+        border-radius: 26px;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,.12);
+        padding: 40px 34px;
+    }
+
+    .login-logo {
+        width: 56px;
+        height: 56px;
+        background: #f8fafc;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 14px;
+    }
+
+    .login-title {
+        font-weight: 700;
+        font-size: 14px;
+        color: #0f172a;
+        text-align: center;
+    }
+
+    .login-sub {
+        color: #64748b;
+        font-size: 12px;
+        text-align: center;
+        margin-top: 2px;
+        margin-bottom: 18px;
+    }
+
+    .login-label {
+        font-size: .85rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: .35rem;
+    }
+
+    .login-input {
+        background: #f8fafc;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 10px 15px;
+        transition: .2s ease;
+    }
+
+        .login-input:focus {
+            border-color: #6366f1;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(99,102,241,.12);
+            outline: none;
+        }
+
+    .btn-login {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-weight: 700;
+        width: 100%;
+        box-shadow: 0 10px 20px -5px rgba(168,85,247,.45);
+        transition: .2s ease;
+    }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(168,85,247,.55);
+            color: #fff;
+        }
+</style>
+
+<div class="login-card-wrap">
+    <div class="login-card">
+
+        <div class="login-logo">
+            <img src="/images/mail.png" alt="Logo" width="40" />
+        </div>
+
+        <div class="login-title">Profesyonel Hesabını Oluşturmaya Başla!</div>
+        <div class="login-sub">Giriş Yap</div>
+
+        <div class="mb-3">
+            <div class="text-danger small" asp-validation-summary="ModelOnly"></div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success py-2 small mb-0">@TempData["Success"]</div>
+            }
+        </div>
+
+        <form asp-action="UserLogin" asp-controller="Login" method="post" novalidate>
+            <div class="mb-3">
+                <label class="login-label">Email</label>
+                <input asp-for="Email" value="@ViewBag.PrefillEmail"
+                       class="form-control login-input" placeholder="ornek@mail.com" />
+                <span class="text-danger small" asp-validation-for="Email"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="login-label">Şifre</label>
+                <input asp-for="Password" type="password"
+                       class="form-control login-input" placeholder="••••••••" />
+                <span class="text-danger small" asp-validation-for="Password"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="IsPersistent" class="form-check-input" id="persist" />
+                <label class="form-check-label small" for="persist">Beni hatırla</label>
+            </div>
+
+            <button type="submit" class="btn-login">Giriş Yap</button>
+
+            <div class="mt-3 text-center small">
+                <span class="text-muted">Hesabın yok mu?</span>
+                <a asp-controller="Register" asp-action="CreateUser" class="ms-1 fw-bold text-decoration-none">
+                    Kayıt ol
+                </a>
+            </div>
+
+            <div class="text-center mt-4 text-muted small">
+                © 2026
+            </div>
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

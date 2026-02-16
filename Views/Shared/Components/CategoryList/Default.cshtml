@@ -1,0 +1,27 @@
+﻿@model List<Project2EmailNight.Entities.Category>
+
+@{
+    var currentCategoryId = Context.Request.Query["categoryId"].ToString();
+}
+
+<nav class="nav flex-column nav-pills nav-pills-sm sidebar-nav"
+     style="padding-left:12px; padding-right:12px; gap:6px;">
+
+    @foreach (var item in Model)
+    {
+        <a class="nav-link d-flex align-items-center gap-2 py-2
+            @(currentCategoryId == item.CategoryId.ToString() ? "active" : "")"
+           asp-controller="Message"
+           asp-action="Inbox"
+           asp-route-categoryId="@item.CategoryId"
+           style="border-radius:12px;">
+
+            <span class="badge rounded-circle"
+                  style="width:10px;height:10px;
+                      background:@(item.ColorHex ?? "#94a3b8");
+                      display:inline-block;"></span>
+
+            <span>@item.CategoryName</span>
+        </a>
+    }
+</nav>

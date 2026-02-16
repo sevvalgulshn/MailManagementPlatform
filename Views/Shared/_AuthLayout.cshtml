@@ -1,0 +1,143 @@
+﻿<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Project2EmailNight</title>
+
+    <link rel="shortcut icon" href="~/assets/images/favicon.ico" />
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/assets/css/icons.css" rel="stylesheet" />
+    <link href="~/assets/css/app.css" rel="stylesheet" />
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background: url('/images/auth-bg.png') center center / cover no-repeat fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+            body::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: rgba(15,23,42,.12);
+                z-index: -1;
+            }
+
+        .auth-wrap {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+            position: relative;
+        }
+
+        /* SADECE Login/UserLogin sayfasında çalışıyoor */
+        body.auth-login .auth-main-container {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        body.auth-login .auth-card {
+            background: #fff;
+            width: 100%;
+            max-width: 520px;
+            border-radius: 26px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,.12);
+            overflow: hidden;
+        }
+
+        body.auth-login .form-side {
+            padding: 2.5rem;
+            overflow: visible;
+            height: auto;
+        }
+
+        body.auth-login .form-content-wrapper {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        body.auth-login .brand-logo-circle {
+            width: 56px;
+            height: 56px;
+            background: #f8fafc;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.auth-login .form-label-custom {
+            font-size: .85rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: .35rem;
+        }
+
+        body.auth-login .input-modern {
+            background: #f8fafc;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 10px 15px;
+            transition: .2s ease;
+        }
+
+            body.auth-login .input-modern:focus {
+                border-color: #6366f1;
+                background: #fff;
+                box-shadow: 0 0 0 4px rgba(99,102,241,.12);
+                outline: none;
+            }
+
+        body.auth-login .btn-primary-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 10px 20px -5px rgba(168,85,247,.45);
+            transition: .2s ease;
+        }
+
+            body.auth-login .btn-primary-gradient:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 15px 25px -5px rgba(168,85,247,.55);
+                color: #fff;
+            }
+
+        body.auth-login .custom-check .form-check-input {
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Login"
+                   && ViewContext.RouteData.Values["action"]?.ToString() == "UserLogin"
+                   ? "auth-login" : "")">
+
+    <div class="auth-wrap">
+        @RenderBody()
+    </div>
+
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/js/app.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,375 @@
+﻿@model Project2EmailNight.Entities.Message
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Yeni E-Posta";
+}
+
+<div class="container-fluid mt-4">
+
+    <!-- Sayfa Başlığı -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h4 class="mb-1 fw-bold">Yeni E-Posta</h4>
+            <div class="text-muted" style="font-size:.92rem;">Hızlı ve düzenli bir şekilde mail oluştur</div>
+        </div>
+
+        <a asp-controller="Message" asp-action="Inbox" class="btn btn-light rounded-pill">
+            <i class="mdi mdi-arrow-left me-1"></i> Gelen Kutusu
+        </a>
+    </div>
+
+    <!-- Başarı / Hata -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-3 shadow-sm">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger rounded-3 shadow-sm">@TempData["Error"]</div>
+    }
+
+    <div class="row g-4">
+
+        <!-- FORM CARD -->
+        <div class="col-12 col-xl-8">
+            <div class="card shadow-sm border-0 compose-card">
+                <div class="card-header bg-white d-flex align-items-center justify-content-between compose-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="compose-badge">
+                            <i class="mdi mdi-pencil-outline"></i>
+                        </span>
+                        <div>
+                            <div class="fw-bold" style="line-height:1.1;">E-Posta Oluştur</div>
+                            <small class="text-muted">Kategori seç, alıcıyı yaz, mesajını gönder</small>
+                        </div>
+                    </div>
+
+                    <span class="text-muted" style="font-size:.85rem;">
+                        <i class="mdi mdi-shield-check-outline me-1"></i> Güvenli Gönderim
+                    </span>
+                </div>
+
+                <div class="card-body">
+
+                    <form asp-controller="Message" asp-action="CreateMessage" method="post" class="compose-form">
+                        @Html.AntiForgeryToken()
+
+                        <div class="text-danger mb-2" asp-validation-summary="All"></div>
+
+                        <!--  Kategori + Alıcı -->
+                        <div class="row g-3">
+                            <div class="col-12 col-lg-6">
+                                <label class="form-label">Kategori</label>
+                                <select class="form-select form-soft" asp-for="CategoryId" asp-items="ViewBag.Categories">
+                                    <option value="">Seçiniz</option>
+                                </select>
+                                <span class="text-danger" asp-validation-for="CategoryId"></span>
+                            </div>
+
+                            <div class="col-12 col-lg-6">
+                                <label class="form-label">Alıcı Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text soft-addon">
+                                        <i class="mdi mdi-email-outline"></i>
+                                    </span>
+                                    <input type="email"
+                                           asp-for="ReceiverEmail"
+                                           class="form-control form-soft"
+                                           placeholder="ornek@mail.com"
+                                           autocomplete="off" />
+                                </div>
+                                <span class="text-danger" asp-validation-for="ReceiverEmail"></span>
+                            </div>
+
+                        
+                            <div class="col-12">
+                                <label class="form-label">Konu</label>
+                                <div class="input-group">
+                                    <span class="input-group-text soft-addon">
+                                        <i class="mdi mdi-format-title"></i>
+                                    </span>
+                                    <input type="text"
+                                           asp-for="Subject"
+                                           class="form-control form-soft"
+                                           placeholder="Konu"
+                                           autocomplete="off" />
+                                </div>
+                                <span class="text-danger" asp-validation-for="Subject"></span>
+                            </div>
+
+                            <!-- Mesaj Editor -->
+                            <div class="col-12">
+                                <label class="form-label">Mesaj</label>
+
+                                <div class="editor-shell">
+                                    <textarea asp-for="MessageDetail" class="form-control" id="editor" rows="9"></textarea>
+                                </div>
+
+                                <span class="text-danger" asp-validation-for="MessageDetail"></span>
+                            </div>
+                        </div>
+
+                        <!-- Footer actions -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a asp-controller="Message" asp-action="Inbox" class="btn btn-light rounded-pill px-4">
+                                Vazgeç
+                            </a>
+
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">
+                                <i class="mdi mdi-send-outline me-1"></i> Mesajı Gönder
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- İPUÇLARI PANELİ -->
+        <div class="col-12 col-xl-4">
+            <div class="card border-0 shadow-sm tips-card">
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="tips-badge">
+                            <i class="mdi mdi-lightbulb-on-outline"></i>
+                        </span>
+                        <div>
+                            <div class="fw-bold" style="line-height:1.1;">İpuçları</div>
+                            <small class="text-muted">Daha iyi mail için mini rehber</small>
+                        </div>
+                    </div>
+
+                    <div class="tips-item">
+                        <div class="tips-title"><i class="mdi mdi-tag-outline me-1"></i> Kategori</div>
+                        <div class="tips-text">Gelen kutusunda hızlı filtre için doğru kategori seç.</div>
+                    </div>
+
+                    <div class="tips-item">
+                        <div class="tips-title"><i class="mdi mdi-format-title me-1"></i> Konu</div>
+                        <div class="tips-text">Kısa + net yaz: “Revizyon talebi”, “Toplantı özeti” gibi.</div>
+                    </div>
+
+                    <div class="tips-item">
+                        <div class="tips-title"><i class="mdi mdi-text-box-outline me-1"></i> Mesaj</div>
+                        <div class="tips-text">1 satır özet + madde madde detay kullan.</div>
+                    </div>
+
+                    <div class="tips-divider my-3"></div>
+
+                    <div class="tips-title mb-2"><i class="mdi mdi-keyboard-outline me-1"></i> Kısayollar</div>
+
+                    <div class="tips-kbd">
+                        <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span>
+                        <span class="ms-2 text-muted" style="font-size:.85rem;">Gönder</span>
+                    </div>
+
+                    <div class="tips-kbd mt-2">
+                        <span class="kbd">Ctrl</span> + <span class="kbd">K</span>
+                        <span class="ms-2 text-muted" style="font-size:.85rem;">Link ekle</span>
+                    </div>
+
+                    <div class="tips-divider my-3"></div>
+
+                    <div class="alert alert-light border-0 rounded-4 mb-0" style="background:#f8fafc;">
+                        <i class="mdi mdi-shield-check-outline me-1"></i>
+                        <b>Not:</b> İçerik uzun ise paragraflara böl. Okunurluk artar.
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<style>
+    /* CKEditor watermark gizleme */
+    .ck-powered-by {
+        display: none !important;
+    }
+
+    /* Card */
+    .compose-card {
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, .06);
+    }
+
+    .compose-header {
+        border-bottom: 1px solid rgba(15,23,42,.06);
+        padding: 14px 18px;
+    }
+
+    .compose-badge {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(111,66,193,.12);
+        color: #6f42c1;
+        font-size: 20px;
+        box-shadow: 0 10px 22px rgba(15,23,42,.08);
+    }
+
+    /* Inputs */
+    .form-soft {
+        border-radius: 14px;
+        background: #f3f5f9;
+        border: 1px solid transparent;
+    }
+
+        .form-soft:focus {
+            background: #fff;
+            border-color: rgba(111,66,193,.25);
+            box-shadow: none;
+        }
+
+    .soft-addon {
+        border-radius: 14px 0 0 14px;
+        background: #f3f5f9;
+        border: 1px solid transparent;
+        color: #64748b;
+    }
+
+    .editor-shell {
+        border-radius: 16px;
+        background: #ffffff;
+        border: 1px solid rgba(15,23,42,.08);
+        box-shadow: 0 10px 25px rgba(15, 23, 42, .05);
+        overflow: hidden;
+    }
+   
+        .editor-shell .ck-editor__editable {
+            min-height: 220px;
+            background: #fff;
+        }
+
+        .editor-shell .ck-toolbar {
+            border: 0;
+            border-bottom: 1px solid rgba(15,23,42,.08);
+            background: #f8fafc;
+        }
+    /* ===== mikro animasyon ===== */
+    .compose-card,
+    .tips-card {
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+        .compose-card:hover,
+        .tips-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, .10);
+        }
+
+    /* ===== İpuçları) ===== */
+    .tips-card {
+        border-radius: 18px;
+    }
+
+    .tips-badge {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(59,130,246,.10);
+        color: #3b82f6;
+        font-size: 20px;
+        box-shadow: 0 10px 22px rgba(15,23,42,.08);
+    }
+
+    .tips-item {
+        padding: 12px 12px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1px solid rgba(15,23,42,.06);
+        margin-top: 10px;
+    }
+
+    .tips-title {
+        font-weight: 700;
+        color: #0f172a;
+        font-size: .92rem;
+    }
+
+    .tips-text {
+        color: #64748b;
+        font-size: .88rem;
+        margin-top: 4px;
+    }
+
+    .tips-divider {
+        height: 1px;
+        background: rgba(15,23,42,.08);
+        border-radius: 999px;
+    }
+
+    .kbd {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 10px;
+        background: #fff;
+        border: 1px solid rgba(15,23,42,.10);
+        font-weight: 700;
+        font-size: .85rem;
+        color: #0f172a;
+        box-shadow: 0 6px 14px rgba(15,23,42,.06);
+    }
+
+    .tips-kbd {
+        display: flex;
+        align-items: center;
+    }
+
+
+    .input-group .form-soft {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+    }
+
+    /* ===== “kart” gibi ===== */
+    .editor-shell .ck.ck-editor__main > .ck-editor__editable {
+        border: 0;
+        padding: 14px;
+    }
+
+    .editor-shell .ck-toolbar {
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+    }
+
+    .editor-shell {
+        border-radius: 16px;
+    }
+
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
+
+    <script>
+        let editorInstance;
+
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                ckfinder: { uploadUrl: '/Message/UploadImage' }
+            })
+            .then(editor => {
+                editorInstance = editor;
+            })
+            .catch(console.error);
+
+        document.querySelector('form[asp-action="CreateMessage"], form[action*="CreateMessage"]')
+            ?.addEventListener('submit', function () {
+                if (editorInstance) {
+                    document.querySelector('#editor').value = editorInstance.getData();
+                }
+            });
+    </script>
+}

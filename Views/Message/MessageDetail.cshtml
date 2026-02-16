@@ -1,0 +1,42 @@
+﻿@model Project2EmailNight.Entities.Message
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Gelen Kutusu";
+}
+
+
+<div class="container">
+    <br /><br />
+    <h3>Mesaj Detayı</h3>
+
+    <div class="mb-3">
+        <label class="form-label"><b>Gönderen</b></label>
+        <input class="form-control" value="@Model.SenderEmail" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><b>Alıcı</b></label>
+        <input class="form-control" value="@Model.ReceiverEmail" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><b>Konu</b></label>
+        <input class="form-control" value="@Model.Subject" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><b>Tarih</b></label>
+        <input class="form-control" value="@Model.SendDate.ToString("dd-MMM-yyyy HH:mm")" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><b>Mesaj</b></label>
+        <div class="border rounded p-3 bg-white">
+            @Html.Raw(Model.MessageDetail)
+        </div>
+    </div>
+
+    <a asp-controller="Message" asp-action="Inbox" class="btn btn-secondary">
+        Gelen Kutusuna Dön
+    </a>
+</div>
